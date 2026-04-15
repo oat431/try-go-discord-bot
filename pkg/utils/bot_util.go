@@ -1,4 +1,4 @@
-package command
+package utils
 
 import (
 	"fmt"
@@ -6,48 +6,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 )
-
-var (
-	commands = []*discordgo.ApplicationCommand{
-		{
-			Name:        "ping",
-			Description: "Replies with Pong!",
-		},
-		{
-			Name:        "pong",
-			Description: "Replies with Ping!",
-		},
-	}
-
-	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-		"ping": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "Pong!",
-				},
-			})
-		},
-		"pong": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "Ping!",
-				},
-			})
-		},
-	}
-)
-
-func HandleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	if i.Type != discordgo.InteractionApplicationCommand {
-		return
-	}
-
-	if handler, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
-		handler(s, i)
-	}
-}
 
 func getApplicationID(s *discordgo.Session) (string, error) {
 	applicationID := s.State.User.ID
@@ -80,10 +38,12 @@ func CleanupGlobalSlashCommands(s *discordgo.Session) error {
 		}
 	}
 
+	fmt.Println("finished cleaning old command")
+
 	return nil
 }
 
-func RegisterSlashCommands(s *discordgo.Session) error {
+func RegisterSlashCommands(s *discordgo.Session, commands []*discordgo.ApplicationCommand) error {
 	guildID := os.Getenv("GUILD_ID")
 	if guildID == "" {
 		return fmt.Errorf("GUILD_ID environment variable is not set")
@@ -98,6 +58,8 @@ func RegisterSlashCommands(s *discordgo.Session) error {
 	if err != nil {
 		return fmt.Errorf("failed to overwrite guild slash commands: %w", err)
 	}
+
+	fmt.Println("finished registering slash commands")
 
 	return nil
 }

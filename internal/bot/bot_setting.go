@@ -1,9 +1,10 @@
-package behavior
+package bot
 
 import (
 	"fmt"
 	"oat431/try-go-discord-bot/internal/command"
 	"oat431/try-go-discord-bot/internal/config"
+	"oat431/try-go-discord-bot/pkg/utils"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,10 +27,8 @@ func StartDiscordBot() {
 		return
 	}
 
-	// register command here
-	dg.AddHandler(command.PingCommand)
+	// Register the slash command handler
 	dg.AddHandler(command.HandleSlashCommand)
-	// end of command registration
 
 	dg.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentMessageContent
 
@@ -39,13 +38,13 @@ func StartDiscordBot() {
 		return
 	}
 
-	err = command.CleanupGlobalSlashCommands(dg)
+	err = utils.CleanupGlobalSlashCommands(dg)
 	if err != nil {
 		fmt.Println("error cleaning up global slash commands,", err)
 		return
 	}
 
-	err = command.RegisterSlashCommands(dg)
+	err = utils.RegisterSlashCommands(dg, command.Commands)
 	if err != nil {
 		fmt.Println("error registering slash commands,", err)
 		return
