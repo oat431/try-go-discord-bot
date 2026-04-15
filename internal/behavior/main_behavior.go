@@ -28,13 +28,26 @@ func StartDiscordBot() {
 
 	// register command here
 	dg.AddHandler(command.PingCommand)
+	dg.AddHandler(command.HandleSlashCommand)
 	// end of command registration
 
-	dg.Identify.Intents = discordgo.IntentsGuildMessages
+	dg.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentMessageContent
 
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("error opening connection,", err)
+		return
+	}
+
+	err = command.CleanupGlobalSlashCommands(dg)
+	if err != nil {
+		fmt.Println("error cleaning up global slash commands,", err)
+		return
+	}
+
+	err = command.RegisterSlashCommands(dg)
+	if err != nil {
+		fmt.Println("error registering slash commands,", err)
 		return
 	}
 
