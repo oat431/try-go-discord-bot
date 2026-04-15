@@ -7,6 +7,21 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func IsPrimeSlashInfo() *discordgo.ApplicationCommand {
+	return &discordgo.ApplicationCommand{
+		Name:        "isprime",
+		Description: "Checks if a number is prime.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionInteger,
+				Name:        "number",
+				Description: "The number to check for primality.",
+				Required:    true,
+			},
+		},
+	}
+}
+
 func IsPrimeSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	options := i.ApplicationCommandData().Options
 	if len(options) == 0 {

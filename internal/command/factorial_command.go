@@ -7,6 +7,21 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func FactorialSlashInfo() *discordgo.ApplicationCommand {
+	return &discordgo.ApplicationCommand{
+		Name:        "factorial",
+		Description: "Calculates the factorial of a number.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionInteger,
+				Name:        "number",
+				Description: "The number to calculate factorial for.",
+				Required:    true,
+			},
+		},
+	}
+}
+
 func FactorialSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	options := i.ApplicationCommandData().Options
 	if len(options) == 0 {
