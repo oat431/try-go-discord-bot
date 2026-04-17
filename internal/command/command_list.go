@@ -8,6 +8,7 @@ var (
 		PongSlashInfo(),
 		FactorialSlashInfo(),
 		IsPrimeSlashInfo(),
+		WelcomSlashInfo(),
 	}
 
 	CommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -15,6 +16,7 @@ var (
 		"pong":      PongSlashCommand,
 		"factorial": FactorialSlashCommand,
 		"isprime":   IsPrimeSlashCommand,
+		"welcome":   WelcomSlashCommand,
 	}
 )
 
