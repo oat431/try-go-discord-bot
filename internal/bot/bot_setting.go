@@ -3,28 +3,21 @@ package bot
 import (
 	"fmt"
 	"oat431/try-go-discord-bot/internal/command"
-	"oat431/try-go-discord-bot/internal/config"
 	"oat431/try-go-discord-bot/pkg/utils"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-func StartDiscordBot() {
-	config.LoadEnvConfig()
-
+func StartDiscordBot() (*discordgo.Session, error) {
 	Token := os.Getenv("TOKEN")
 	if Token == "" {
-		fmt.Println("DISCORD_BOT_TOKEN environment variable is not set")
-		return
+		return nil, fmt.Errorf("TOKEN environment variable is not set")
 	}
 
 	dg, err := discordgo.New("Bot " + Token)
 	if err != nil {
-		fmt.Println("error creating Discord session,", err)
-		return
+		return nil, fmt.Errorf("error creating Discord session: %w", err)
 	}
 
 	// Register the slash command handler
@@ -34,26 +27,21 @@ func StartDiscordBot() {
 
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("error opening connection,", err)
-		return
+		return nil, fmt.Errorf("error opening connection: %w", err)
 	}
 
 	err = utils.CleanupGlobalSlashCommands(dg)
 	if err != nil {
-		fmt.Println("error cleaning up global slash commands,", err)
-		return
+		return nil, fmt.Errorf("error cleaning up global slash commands: %w", err)
 	}
 
 	err = utils.RegisterSlashCommands(dg, command.Commands)
 	if err != nil {
-		fmt.Println("error registering slash commands,", err)
-		return
+		return nil, fmt.Errorf("error registering slash commands: %w", err)
 	}
 
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	<-sc
+	setSession(dg)
+	fmt.Println("Bot is now running.")
 
-	dg.Close()
+	return dg, nil
 }

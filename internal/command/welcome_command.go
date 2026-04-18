@@ -1,6 +1,8 @@
 package command
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"github.com/bwmarrin/discordgo"
+)
 
 func WelcomSlashInfo() *discordgo.ApplicationCommand {
 	return &discordgo.ApplicationCommand{
